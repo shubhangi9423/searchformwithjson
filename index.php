@@ -4,13 +4,14 @@
 <link href="style.css" rel="stylesheet" type="text/css"></link>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/mark.js/7.0.0/jquery.mark.min.js"></script>
 
 <body>
 <div id="grid">
 <h1>POST DATA</h1>
 <input type="button" name="Add" value="ADD" class="add" />
-  <table class="data-table">
-    <form>
+<table class="data-table">
+<form>
   <input type="text" name="search" placeholder="Search Here.." id="search" class="search">
 </form>
     <thead>
@@ -26,48 +27,43 @@
     while ($row = mysqli_fetch_array($query))
     {
       echo '<tr>
-          <td class="pid" style="width:50px;">'.ucwords($row['id']).'</td>
+          <td class="pid" style="width:50px;">'.$row['id'].'</td>
           <td class="ptitle"  style="width:100px;">'.ucwords($row['title']).'</td>
           <td class="pcontent"  style="width:500px;">'.$row['content'].'</td>
         </tr>';
     }
     ?>
     </tbody>
-  </table>
+</table>
 </div>
 <div id="register" class="animate form" style="display: none">
       <form  action="mysuperscript.php" autocomplete="on"> 
         <h1>Add Your Post Data</h1> 
         <table>
         <tr>
-        <td> 
+         <td> 
           <label for="Title" class="title" >Title*</label>
-          </td>
-          <td>
+         </td>
+         <td>
           <input id="title" name="title" required="required" type="text" placeholder="Enter The Tilte" />
-        </td>
+         </td>
         </tr>
         <tr>
         <td> 
           <label for="Content" class="content"  >Content*</label>
-          </td>
-          <td>
+        </td>
+        <td>
            <input type="textarea" name="content" id="content" cols="30" rows="5">
         </td>
         </tr>
-        <tr><td>
-       
-          <input type="button" value="SUBMIT" class="submit"/> 
+        <tr>
+        <td>
+          <input type="button" value="SUBMIT" class="submit" id="submit"/> 
         </td>
         </tr>
-        
-      </form>
-    </div>
-
+     </form>
+ </div>
 </html>
-
-
-
 
 <script type="text/javascript">
 jQuery(document).ready(function(){
@@ -75,7 +71,7 @@ jQuery(document).ready(function(){
       jQuery("#grid").hide(1000);
       jQuery("#register").show(1000);
     });
-    jQuery(".submit").click(function(){
+    jQuery("#submit").click(function(){
       var post={};
       post.title=jQuery("#title").val();
       post.content=jQuery("#content").val();
@@ -90,25 +86,28 @@ jQuery(document).ready(function(){
      })
  });
 
-     jQuery("#search").keyup(function(e){
-         $.ajax({
-                     type: 'POST',
-                     url: 'response.php',
-                     data: 'search_name='+$(this).val(),
-                     success: function(data){
-                      var jsonParse=$.parseJSON(data);
-                      var  json_data =""; 
-                      for(var i in jsonParse){
-                          json_data+='<tr><td style="width:50px">'+jsonParse[i].id+'</td>'+
-                            '<td style="width:100px">'+jsonParse[i].title+'</td>'+
-                            '<td style="width:500px">'+jsonParse[i].content+'</td></tr>';
-                        }
-                       json_data+="";
-                    jQuery('#gridData').empty().append(json_data);
+jQuery("#search").keyup(function(e){
+     $.ajax({
+                 type: 'POST',
+                 url: 'response.php',
+                 data: 'search_name='+$(this).val(),
+                 success: function(data){
+                  var jsonParse=$.parseJSON(data);
+                  
+                  var  json_data =""; 
+                  for(var i in jsonParse){
+                      json_data+='<tr><td style="width:50px">'+jsonParse[i].id+'</td>'+
+                        '<td style="width:100px">'+jsonParse[i].title+'</td>'+
+                        '<td style="width:500px">'+jsonParse[i].content+'</td></tr>';
+                    }
+                   json_data+="";
 
-                    
-                 }
-             });
+                jQuery('#gridData').empty().append(json_data);
+                      var searchTerm = $("#search").val();
+                      jQuery("#gridData").unmark().mark(searchTerm);
+                      trigger("input.highlight").focus(); 
+             }
+         });
 
     });
 });
